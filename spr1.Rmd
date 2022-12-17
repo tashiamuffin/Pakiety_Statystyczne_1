@@ -2,7 +2,31 @@
 title: "Sprawozdanie"
 author: "Alicja Myśliwiec, Natalia Lach"
 date: "`r Sys.Date()`"
-output: pdf_document
+fontsize: 12pt
+output: 
+  pdf_document:
+        toc: true
+        toc_depth: 3
+        number_sections: true
+        fig_caption: true
+        
+header-includes:
+    - \usepackage{polski}
+    - \usepackage[utf8]{inputenc}
+    - \usepackage{graphicx}
+    - \usepackage{amsmath}
+    - \usepackage{multirow}
+    - \usepackage{float}
+    - \usepackage{enumitem}
+    - \usepackage{mathtools}
+    - \usepackage{hyperref}
+    - \usepackage{url}
+    - \mathtoolsset{showonlyrefs}
+    - \usepackage{caption}
+    - \usepackage{geometry}
+    - \newgeometry{tmargin=1.5cm, bmargin=1.5cm, lmargin=1.5cm, rmargin=1.5cm}
+    - \renewcommand*{\figurename}{Rys.}
+    - \renewcommand*{\tablename}{Tab.}
 ---
 
 ```{r setup, include=FALSE}
@@ -17,58 +41,81 @@ library('dplyr')
 library(ggplot2)
 ```
 
-# 1. Wstęp
-eee
+\newpage
+
+# Wstęp
+
+Niniejsza praca opisuje to i to, POSTEP TECHNOLOGVZNY DAAAAMN
+Ogólnie mowimy o czytaniu ksiazek, hmmmmmmm ludzie judgement
+
+1.
+Co jest interesujące w przedstawionym opracowaniu.Kurwa nic
+2.
+Dlaczego przedłożona praca jest znacząca.Nie jest
+3.
+O najbardziej aktualnym stanie wiedzy o rozpatrywanym problemie.Nie posiadam
+4.
+W jaki sposób wyniki pracy zostaną przedstawione.
+Zatem wstęp jest pierwszą szansą autora do zdefiniowania zakresu opracowania, a mocne podkreślenie wartości uzyskanych wyników jest zasadniczym bodźcem zachęcającym czytelnika do szczegółowego zapoznania się z resztą opracowania i zwykle znacznie przyśpiesza procedurę introdukowania rezultatów badań do praktyki.
 
 
-# 2. Opis danych
-Zbiór danych przedstawia cechy najlepszych 5281 książek kryminalnych i zagadkowych. (jak przetłumaczyć crime and mystery to ja nie wiem xd)  
+# Opis danych
 
-Wczytanie:
-```{r}
-
+```{r, echo=FALSE, warning=FALSE}
+#wczytanie danych
 plik <- read.csv('best_crime_and_mystery_books.csv', na.strings=c("", "NA"), header = TRUE)
-plik[5,]
+#nie wiem czy to zostawić jako pokazanie
+#plik[5,]
+```
 
+```{r, echo=FALSE}
+# w celu poprawnego wczytania danych, zamieniamy wartości 6 i 17 odpowiednio 
+# na 2006 i 2017 (rok publikacji)
 plik$publication_year[plik$publication_year == '6'] <- 2006
 plik$publication_year[plik$publication_year == '17'] <- 2017
 
 ```
-opis zmiennych - mozna sprobowac zrobic tabele z tymi zmiennymi z kolumnami: zmienna, rodzaj (kateoryczna/ciągła), typ danych (int/numeric/chr), min i max wartosci, ilość braków, krótki opis co przedstawia (zamiast takiego wypisywania)
-
-### book rank
-
-### id
-
-### title
-
-### book_author
-
-### publication_year
-
-### publisher
-
-### language_code
-
-### num_pages
-
-### average_rating
-
-### ratings_count
 
 
-# 3. pytania badawcze, cel analizy
-Cel analizy - odpowiedz na pytanie jakie cechy mają książki, którymi interesuje się najwięcej ludzi? analiza popularności książek kryminalnych w zależności od ich aspektów, takich jak ilość stron, wydawnictwo, autor.
+
+Dane zostaną przedstawione i opisane w tabeli. Zbiór dotyczy 5281 najlepszych książek kryminalnych  (ang. crime and mystery).\footnote{Rankingu książek stworzony przez stronę goodreads [\url{https://www.goodreads.com/}]}
+
+```{=Latex}
+\begin{table}[h!]
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline
+\begin{tabular}[c]{@{}c@{}}ZBIÓR \\ DANYCH\end{tabular} & OPIS                                                                                                                          & RODZAJ                                                            & \begin{tabular}[c]{@{}c@{}}TYP \\ DANYCH\end{tabular} & \begin{tabular}[c]{@{}c@{}}PRZYJMOWANE\\ WARTOŚCI\end{tabular} & BRAKI \\ \hline
+\textit{book\_rank}                                                             & \begin{tabular}[c]{@{}c@{}}Miejsce w rankingu \\ książek, niektóre pozycje \\ są powielone\\  (miejsce ex aequo)\end{tabular} & kategoryczne & int                                                   & 1-5269                                                         & -     \\ \hline
+\textit{id}                                                                     & \begin{tabular}[c]{@{}c@{}}Unikalny identyfikator \\ książki\end{tabular}                                                     & kategoryczne                                                      & int                                                   & 3-52722291                                                     & -     \\ \hline
+\textit{title}                                                                  & Tytuł książki                                                                                                                 & kategoryczne                                                      & chr                                                   & -                                                              & -     \\ \hline
+\textit{book\_author}                                                           & Autor książki                                                                                                                 & kategoryczne                                                      & chr                                                   & -                                                              & -     \\ \hline
+\textit{publication\_year}                                                      & Rok publikacji książki                                                                                                        & dyskretne                                                     & int                                                   & 1934-2021                                                      & 727   \\ \hline
+\textit{publisher}                                                              & Wydawnictwo                                                                                                                   & kategoryczne                                                      & chr                                                   & -                                                              & 836   \\ \hline
+\textit{language\_code}                                                         & \begin{tabular}[c]{@{}c@{}}Kod języka, w którym \\ została napisana książka\end{tabular}                                      & kategoryczne                                                      & chr                                                   & -                                                              & -     \\ \hline
+\textit{num\_pages}                                                             & Liczba stron                                                                                                                  & dyskretne                                                        & int                                                   & 0-27500                                                        & 814   \\ \hline
+\textit{average\_rating}                                                        & Średnia ocena książki                                                                                                         & ciągłe                                                           & dbl                                                   & 0-5                                                            & -     \\ \hline
+\textit{ratings\_count}                                                         & \begin{tabular}[c]{@{}c@{}}Liczba ocen zostawionych\\ danej książce\end{tabular}                                              & dyskretne                                                        & int                                                   & 0-6247740                                                      & -     \\ \hline
+\end{tabular}
+\caption{Cechy książek kryminalnych}
+\end{table}
+```
 
 
-## 3.1 quick analiza popularnosci = zainteresowania = ratings_count
-najwazniejsza zmienna dla nas, przedstawia ilosc osob zainteresowanych tą książką na tyle,  żeby dać jej ocene, narysowac hist
+# Cel analizy, pytania badawcze
 
-```{r}
-p1 <- ggplot(plik, aes( x = ratings_count)) + geom_histogram(bins=100) 
+Celem analizy jest odpowiedź na pytanie, jakie cechy mają książki, którymi interesuje się najwięcej ludzi. Zostanie przeprowadzona analiza popularności książek kryminalnych w zależności od ich cech, takich jak ilość stron, wydawnictwo, czy autor.
+
+
+## Zainteresowanie 
+
+Najistotniejszą informację zawiera zbiór danych *ratings_count*. Na jej podstawie można odpowiedzieć na podstawowe pytanie, ile osób było zainteresowanych konkretną książką na tyle, aby wystawić jej ocenę. 
+
+
+```{r, echo=FALSE}
+p1 <- ggplot(plik, aes( x = ratings_count)) + geom_histogram(bins=100) + ggtitle("histogram")
 
 p2 <- ggplot(plik, aes(x = "", y = ratings_count)) + 
-  geom_boxplot() 
+  geom_boxplot() + ggtitle("jakis wykres pudelkowy ilosci ocen") + labs(x="cos", y="inne cos")
 
 grid.arrange(p1, p2, nrow=2) 
 
@@ -83,14 +130,14 @@ Faktycznie są to bardzo znane ksiązki, z duzą iloscia ocen,
 są to te wartosci odstające, bo count jest way bigger niz srednia albo mediana,
 no i jest pare ksiazek z zerowymi głosami. (jak one trafiły do tego zestawienia top ksiazek to idk)
 
-## 3.2 Czy czas miał wpływ na popularność? Książki z którego roku cieszą się największymz zainteresowaniem?
+## Czy czas miał wpływ na popularność? Książki z którego roku cieszą się największymz zainteresowaniem?
 wczytanie danych:
 ```{r}
 ##wczytanie danych - z pominieciem brakujących wartości
 year_vs_count <- na.omit(data.frame( year = plik$publication_year, count = plik$ratings_count))
 head(year_vs_count)
 
-p1 <- ggplot(year_vs_count, aes(x=year, y=count)) + geom_point() 
+p1 <- ggplot(year_vs_count, aes(x=year, y=count)) + geom_point() + ggtitle("rozproszenie ilosci ocen na przestrzeni lat")
 p1
 ```
 rok a ilosc ksiazek a laczna ilosc ocen  a srednia ilosc ocen na ksiazke
@@ -125,7 +172,7 @@ df[df$avg_count == max(df$avg_count),] ##średnio
 ```
 wnioski:
 
-## 3.3 Czyli czy ilość stron ma wpływ na zainteresowanie książką
+## Czyli czy ilość stron ma wpływ na zainteresowanie książką
 ```{r}
 num_vs_count <- na.omit(data.frame(num_pages = plik$num_pages, ratings_count = plik$ratings_count))
 ```
@@ -137,7 +184,7 @@ cor(num_vs_count$num_pages, num_vs_count$ratings_count, method = "kendall")
 
 plik[plik$ratings_count == max(plik$ratings_count),]
 
-p <- ggplot(num_vs_count, aes(x=num_pages, y=ratings_count)) + geom_point() + scale_x_continuous(limits=c(0,1000))
+p <- ggplot(num_vs_count, aes(x=num_pages, y=ratings_count)) + geom_point() + scale_x_continuous(limits=c(0,1000)) + ggtitle("ilosc ocen w zaleznosci od liczby stron")
 
 p
 ```
@@ -159,10 +206,10 @@ count_per_pages <- na.omit(data.frame(less_than_pages = seq(ns, max(num_vs_count
 ```
 wykr
 ```{r}
-p1 <- ggplot(count_per_pages, aes(x=less_than_pages, y=overall_count)) + geom_point() + scale_x_continuous(limits=c(0,2000))
+p1 <- ggplot(count_per_pages, aes(x=less_than_pages, y=overall_count)) + geom_point() + scale_x_continuous(limits=c(0,2000)) + ggtitle("łaczna ilośc ocen na konkretny zakres stron")
 
 
-p2 <- ggplot(count_per_pages, aes(x=less_than_pages, y=avg_count)) + geom_point() + scale_x_continuous(limits=c(0,2000))
+p2 <- ggplot(count_per_pages, aes(x=less_than_pages, y=avg_count)) + geom_point() + scale_x_continuous(limits=c(0,2000)) + ggtitle("srednia ilosc ocen na dany zakres")
 
 
 grid.arrange(p1, p2, ncol=2) 
@@ -175,10 +222,10 @@ count_per_pages[count_per_pages$avg_count == max(count_per_pages$avg_count),]
 mozna tez te boxploty tu dac
 
 
-## 3.4 How are average rating and popularity related? AVG VS COUNT 
+## How are average rating and popularity related? AVG VS COUNT 
 ```{r}
 avg_vs_count <- na.omit(data.frame(avg_rating = plik$average_rating, ratings_count = plik$ratings_count))
-p <- ggplot(avg_vs_count, aes(x=avg_rating, y=ratings_count)) + geom_point() 
+p <- ggplot(avg_vs_count, aes(x=avg_rating, y=ratings_count)) + geom_point() + ggtitle("punkt srednia ocena + ilosc ocen")
 p
 
 cor(avg_vs_count$avg_rating, avg_vs_count$ratings_count, method = "pearson")
@@ -214,7 +261,7 @@ p1
 ```
 boxplot zgadza sie z pierwszym wykresem
 
-## 3.5  publisher VS count
+## publisher VS count
 ```{r}
 pub_vs_count <- na.omit(data.frame(publisher = plik$publisher, count = plik$ratings_count))
 
@@ -245,7 +292,7 @@ grid.arrange(p1, p2, ncol=2)
 ```
 wnioskiii
 
-## 3.6 top 10 authors - authors vs count
+## top 10 authors - authors vs count
 ```{r}
 aut_vs_count <- na.omit(data.frame(author = plik$book_author, count = plik$ratings_count))
 
@@ -253,7 +300,7 @@ df <- as.data.frame(table(aut_vs_count$author))
 colnames(df) <- c('author', 'bpa')
 df$all_counts <- aggregate(aut_vs_count$count, by=list(Category=aut_vs_count$author), FUN=sum)[,2]
 df$avg_count <- df$all_counts/df$bpa
-df$publisher <- as.character(df$author)
+df$author <- as.character(df$author)
 ##top 10 autorow pod wzgledem ilosci wydanych ksiazek
 head(df[order(-df$bpa),])
 ##top 10 publisherów pod wzgledem lacznej ilosci ocen
@@ -276,7 +323,7 @@ grid.arrange(p1, p2, ncol=2)
 ```
 wnioskiii
 
-# 4. podumowanie i wnioski 
+# podumowanie i wnioski 
 jestesmy super
 
 

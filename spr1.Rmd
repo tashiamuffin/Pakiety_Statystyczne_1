@@ -196,14 +196,14 @@ ggsave("count_year_2.jpg", p)
 \begin{figure}[H]
 \captionsetup{justification=centering,margin=2cm}
 \begin{center}
-\includegraphics{count_year_2.jpg}
+\includegraphics[width=0.75\textwidth]{count_year_2.jpg}
 \caption{Wykresy - łączna ilość ocen wystawionych w danym roku oraz średnia uwzględniająca ilość wydanych w tym roku książek}
 \label{w3}
 \end{center}
 \end{figure}
 
 
-Zestawiając ze sobą wykresy przedatwione na rysunku \ref{w3}
+Zestawiając ze sobą wykresy przedatwione na rysunku \ref{w3}, zauważalna jest niespójność w charakterystycznym przebiegu wartości na przestrzeni lat. Rok w którym zanotowana została największa ilość ocen nie pokrywa się z tym, w którym odnotowano największą średnią. Jest to następstwo sytuacji, w której w danym roku została jedynie jedna, lecz bardzo popularna książka.
 ```
 ```{r, include=FALSE}
 p1 <- ggplot(df, aes(x=year, y=bpy)) + geom_point() + ggtitle('Ilość książek w roku') + labs(x = "rok", y ="ilość książek")  + theme(plot.title = element_text(hjust = 0.5))
@@ -212,11 +212,21 @@ ggsave("bpy.jpg", p1)
 
 ```
 ```{=LATEX}
-\includegraphics{bpy.jpg}
+\begin{figure}[H]
+\captionsetup{justification=centering,margin=2cm}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{bpy.jpg}
+\caption{Wykres przedtawiający ilość wydanych książek w danym roku}
+\label{w4}
+\end{center}
+\end{figure}
+
 ```
 
+NIE WIEM JAK TO ZINTERPRETOWAC, CHYBA MIAŁAŚ JAKĄŚ ZŁOTĄ MYŚL, IDE DALEK (jak cos to na stronie wyej bawilam sie wielkoscia wykresow, nie  wiem czy to overall jest git ze te sa mniejsze)
 wracamy do naszego pytania - czy rok ma znaczenie
 brak widocznej zaleznosci liniowej, ale rangi spearmana nawet wysokie
+RANGI TO W OGOLE NIE WIEM 
 ```{=LATEX}
 \begin{table}[H]
 \begin{center}
@@ -243,7 +253,7 @@ df[df$avg_count == max(df$avg_count),] ##średnio
 ```
 wnioski:
 
-## Czyli czy ilość stron ma wpływ na zainteresowanie książką
+## Czy ilość stron ma wpływ na zainteresowanie książką
 ```{r, echo = FALSE}
 num_vs_count <- na.omit(data.frame(num_pages = plik$num_pages, ratings_count = plik$ratings_count))
 plik[plik$ratings_count == max(plik$ratings_count),]
@@ -260,7 +270,14 @@ ggsave("page_count.jpg" ,p)
 ```
 
 ```{=Latex}
-\includegraphics{page_count.jpg}
+\begin{figure}[H]
+\captionsetup{justification=centering,margin=2cm}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{page_count.jpg}
+\caption{Wykres rozproszenia ilośći ocen w zależności od długości książki (ilość stron)}
+\label{w5}
+\end{center}
+\end{figure}
 ```
 
 
@@ -280,7 +297,7 @@ for (n in seq(ns, max(num_vs_count$num_pages), ns)) {
 count_per_pages <- na.omit(data.frame(less_than_pages = seq(ns, max(num_vs_count$num_pages), ns), overall_count = n_p, avg_count = avg_p, num_books = num_books))
 
 ```
-wykr
+what can I say, im dumb
 ```{r, include=FALSE}
 p1 <- ggplot(count_per_pages, aes(x=less_than_pages, y=overall_count)) + geom_point() + scale_x_continuous(limits=c(0,2000)) + ggtitle("Łączna ilość ocen na zakres") + labs(x="zakres stron", y="łączna ilość ocen")  + theme(plot.title = element_text(hjust = 0.5))
 
@@ -293,9 +310,17 @@ ggsave("cpage_count.jpg", p)
 ```
 
 ```{=Latex}
-\includegraphics{cpage_count.jpg}
+\begin{figure}[H]
+\captionsetup{justification=centering,margin=2cm}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{cpage_count.jpg}
+\caption{Wykresy - łączna oraz średnia ilość stron względem rozważanych przedziałóW liczbowych}
+\label{w6}
+\end{center}
+\end{figure}
+
+Ponownie, można zauważyć zmianę chcarakterestyki wykresów na rysunku \ref{w6}. Sytuacja ta była już zauważalna na rysunku \ref{w3}, na którym to analizowana była ilość ocen względem roku wydania książki. Przy rozpatrywaniu ilości ocen względem ilości stron (konkretniej pewnego zakresu stron), można stwierdzić, iż największym zainteresowaniem cieszą się książki posiadające mniej niż 500 stron. Jednak bazując na wartościach średnich, to wśród ponad 1000-stronicowych egzemplarzy znajdują się książki, które zdobywają największą ilość ocen.
 ```
-analiza wzgledem ilosci ksiazek:
 
 ```{r, include=FALSE}
 p1 <- ggplot(count_per_pages, aes(x=less_than_pages, y=num_books)) + geom_point() + scale_x_continuous(limits=c(0,2000)) + ggtitle("Ilość książek na zakres") + labs(x="zakres stron", y="ilość książek") +  theme(plot.title = element_text(hjust = 0.5))
@@ -303,11 +328,22 @@ p1 <- ggplot(count_per_pages, aes(x=less_than_pages, y=num_books)) + geom_point(
 ggsave("cpagenum_count.jpg", p1)
 ```
 ```{=Latex}
-\includegraphics{cpagenum_count.jpg}
+\begin{figure}[H]
+\captionsetup{justification=centering,margin=2cm}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{cpagenum_count.jpg}
+\caption{Wykres ilości książek posiadających liczbę stron z odpowiedniego zakresu liczbowego}
+\label{w7}
+\end{center}
+\end{figure}
+
+wyglada to dokładnie jak wykres z łaczna iloscia ocen, ale jakies wnioski mozna wyciagnac - to prawda można.
+Ja to widze tak, siała baba mak - XD
+Nie no
+Nie wiem jak to ładnie ubrać w słowa zaraz wychodze 
+Ksiązki z mniejsza ilościa stron wyjebalo z uwagi wlasnie ze takich ksiazek jest wiecej, szar czlowiek tez predziej po takiego szaraczka ksiazke siegnie - stad ilosc ocen ogromna. Ksiązek ktore maja ogromna liczbe stron jest mniej - jezeli jednak juz sa sa to gigachady (poprzec to jakims sprawdzeniem jakie pozycje maja tak duzo stron i ktore maja miejsce w rankingu? Damn czy my oatrzymy na miejsce w rankingu?) Czy my oprzyrownujemy do jakis rozkladow te sliczne wykresy? nie wiem czy o to chodzi w ogole w tym sprawozdaniu XD przepraszam za moja egzystencje, nie chce tego zwalac na chorobe te dwa dni czwartek piatek moglam bardziej do tego siasc 
+
 ```
-wyglada to dokładnie jak wykres z łaczna iloscia ocen, ale jakies wnioski mozna wyciagnac
-
-
 top wyniki
 ```{r, echo=FALSE}
 count_per_pages[count_per_pages$overall_count == max(count_per_pages$overall_count),]
@@ -315,7 +351,7 @@ count_per_pages[count_per_pages$avg_count == max(count_per_pages$avg_count),]
 ```
 
 
-## How are average rating and popularity related? AVG VS COUNT 
+## Czy średnia ilość ocen jest skorelowana z popularnością ksiązki?
 ```{r, include = FALSE}
 avg_vs_count <- na.omit(data.frame(avg_rating = plik$average_rating, ratings_count = plik$ratings_count))
 p <- ggplot(avg_vs_count, aes(x=avg_rating, y=ratings_count)) + geom_point() + ggtitle("Wykres rozproszenia średniej oceny i ilości") + labs(x="średnia ocena", y = "ilość ocen") +
@@ -323,7 +359,26 @@ p <- ggplot(avg_vs_count, aes(x=avg_rating, y=ratings_count)) + geom_point() + g
 ggsave("avg_count.jpg", p)
 ```
 ```{=Latex}
-\includegraphics{avg_count.jpg}
+\begin{figure}[H]
+\captionsetup{justification=centering,margin=2cm}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{avg_count.jpg}
+\caption{Wykres rozproszenia ilości ocen w zależności od śreniej}
+\label{w8}
+\end{center}
+\end{figure}
+
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+Pearson    & Kendall      & Spearman    \\ \hline
+0.04642757 & -0.009206791 & -0.02883265 \\ \hline
+\end{tabular}
+\caption{Zestawienie korelacji aj ges, staram się}
+\label{tab3}
+\end{center}
+\end{table}
 ```
 
 KORELACJE

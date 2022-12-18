@@ -57,8 +57,6 @@ W niniejszej pracy przedstawiono analizę danych opisujących najpopularniejsze 
 ```{r, echo=FALSE, warning=FALSE}
 #wczytanie danych
 plik <- read.csv('best_crime_and_mystery_books.csv', na.strings=c("", "NA"), header = TRUE)
-#nie wiem czy to zostawić jako pokazanie
-#plik[5,]
 ```
 
 ```{r, echo=FALSE}
@@ -68,7 +66,6 @@ plik$publication_year[plik$publication_year == '6'] <- 2006
 plik$publication_year[plik$publication_year == '17'] <- 2017
 
 ```
-
 
 
 Dane zostaną przedstawione i opisane w tabeli. Zbiór dotyczy 5281 najlepszych książek kryminalnych  (ang. crime and mystery).\footnote{Ranking stworzony przez stronę goodreads [\url{https://www.goodreads.com/}]}
@@ -99,7 +96,16 @@ Dane zostaną przedstawione i opisane w tabeli. Zbiór dotyczy 5281 najlepszych 
 \label{tab1}
 \end{table}
 ```
-\newpage
+```{=LATEX}
+Jak wynika z powyższej tabeli \ref{tab1}, analizowany zbiór danych zawiera 10 kolumn przedstawiających cechy znanych książek kryminalnych. Są to dane różnego rodzaju - od zmiennych kategorycznych, takich jak tytuł i autor, po zmienne ciągłe, opisujące średnią ocenę dzieła. Zbiór zawiera pewne braki. Najwięcej brakujących wartości przypada wydawnictwu. Poniżej przedstawiony zostanie przykładowy wiersz danych opisujących jedną z książek z analizowanego rankingu.
+```
+
+```{r, echo = FALSE}
+plik[5,]
+```
+Jest to dzieło Trumana Capote'a o tytule `r plik[5,]$title` z `r plik[5,]$publication_year` roku. Z danych wynika, że została ona oceniona na `r plik[5,]$average_rating` na podstawie `r plik[5,]$ratings_count` wydanych przez czytelników ocen.
+
+
 
 # Cel analizy, pytania badawcze
 
@@ -134,19 +140,17 @@ ggsave("ratings_count.jpg", p)
 
 Średnia ilość głosów oddanych na ksiażkę wynosi `r mean(plik$ratings_count)`, mediana - `r median(plik$ratings_count)`. Bazując na tych wynikach można stwiedzić, iż rozkład ilości ocen jest prawostronnie skośny. Otrzymana mediana jest mniejsza od średniej, a wykresy widoczne na rysunku \ref{w1} również sugerują wspomnianą skośność. Przy dopasowaniu empirycznej gęstości zauważalny byłby rozciagnięty ogon rozkładu w prawą stronę, natomiast duża ilość wartości odstających znajduję się nad 'pudełkiem' na ukazanym wykresie pudełkowym.
 
-\pagebreak
-
 Najpopularniejsze książki to:
 ```
 ```{r, echo=FALSE}
 plik[order(-plik$ratings_count),][1:5,c(3,10)]
 ```
 
-Faktycznie, są to bardzo popularne ksiązki, które doczekały się równie popularnych ekranizacji. Ilosci ocen są bardzo duże, znacząco przewyższające wartością średnią oraz mediane, stąd są to zaobserwowane wartości odstające.
+Faktycznie, są to bardzo popularne książki, które doczekały się równie popularnych ekranizacji. Ilości wydanych na nie ocen są bardzo duże, znacząco przewyższające wartość średnią oraz medianę. Są to wartości odstające zaobserwowane na wcześniejszych wykresach.
 
 ## Czy okres w którym została wydana książka, ma wpływ na jej popularność? 
 
-Zastanowić się można, książki z którego roku cieszą się największymz zainteresowaniem.
+Podczas analizy rozważanych danych, dość naturalnym problemem badawczym może być znalezienie roku, w którym wydane książki cieszą się największym zainteresowaniem.
 ```{r, include=FALSE}
 ##wczytanie danych - z pominieciem brakujących wartości
 

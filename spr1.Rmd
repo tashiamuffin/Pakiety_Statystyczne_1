@@ -45,18 +45,11 @@ library(ggplot2)
 
 # Wstęp
 
-Niniejsza praca opisuje to i to, POSTEP TECHNOLOGVZNY DAAAAMN
-Ogólnie mowimy o czytaniu ksiazek, hmmmmmmm ludzie judgement
+W niniejszej pracy przedstawiono analizę danych opisujących najpopularniejsze książki kryminalne.\footnote{Dane pochodzą ze strony kaggle [\url{https://www.kaggle.com/datasets/salmanalmaiman/goodreads-beast-crime-mystery-books}]} 
 
-1.
-Co jest interesujące w przedstawionym opracowaniu.Kurwa nic
-2.
-Dlaczego przedłożona praca jest znacząca.Nie jest
-3.
-O najbardziej aktualnym stanie wiedzy o rozpatrywanym problemie.Nie posiadam
-4.
-W jaki sposób wyniki pracy zostaną przedstawione.
-Zatem wstęp jest pierwszą szansą autora do zdefiniowania zakresu opracowania, a mocne podkreślenie wartości uzyskanych wyników jest zasadniczym bodźcem zachęcającym czytelnika do szczegółowego zapoznania się z resztą opracowania i zwykle znacznie przyśpiesza procedurę introdukowania rezultatów badań do praktyki.
+ Odpowiednio postawione pytania badawcze oraz uzyskane odpowiedzi, pozwoliły dokonać interpretacji wyników, z których wysunięte zostały wnioski na temat czynników wpływających na popularność owego gatunku książek. Wszelkie działania na wybranym zbiorze danych oraz wizualizacja przeprowadzono  
+ w języku R.
+
 
 
 # Opis danych
@@ -79,6 +72,12 @@ plik$publication_year[plik$publication_year == '17'] <- 2017
 
 
 Dane zostaną przedstawione i opisane w tabeli. Zbiór dotyczy 5281 najlepszych książek kryminalnych  (ang. crime and mystery).\footnote{Rankingu książek stworzony przez stronę goodreads [\url{https://www.goodreads.com/}]}
+```{=LATEX}
+\begin{itemize}
+  \item W zbiorach, w których wystąpiły braki, w celu ich ominięcia została użyta wbudowana funkcja języka R \textbf{na.omit()}.
+  \item Zbiór \textit{publication\_year} wymagał zmiany wartości 6 i 17 odpowiednio na 2006 i 2017, aby dane zostały poprawnie wczytane. 
+\end{itemize}
+```
 
 ```{=Latex}
 \begin{table}[h!]
@@ -97,14 +96,16 @@ Dane zostaną przedstawione i opisane w tabeli. Zbiór dotyczy 5281 najlepszych 
 \textit{ratings\_count}                                                         & \begin{tabular}[c]{@{}c@{}}Liczba ocen zostawionych\\ danej książce\end{tabular}                                              & dyskretne                                                        & int                                                   & 0-6247740                                                      & -     \\ \hline
 \end{tabular}
 \caption{Cechy książek kryminalnych}
+\label{tab1}
 \end{table}
 ```
-
+\newpage
 
 # Cel analizy, pytania badawcze
 
-Celem analizy jest odpowiedź na pytanie, jakie cechy mają książki, którymi interesuje się najwięcej ludzi. Zostanie przeprowadzona analiza popularności książek kryminalnych w zależności od ich cech, takich jak ilość stron, wydawnictwo, czy autor.
-
+```{=LATEX}
+Celem analizy jest odpowiedź na pytanie, jakie cechy mają książki, którymi interesuje się najwięcej ludzi. Zostanie przeprowadzona analiza popularności książek kryminalnych w zależności od ich cech, takich jak ilość stron, wydawnictwo, czy autor (odpowiednie zbiory danych przedstawiono w tabeli \ref{tab1}).
+```
 
 ## Zainteresowanie 
 
@@ -113,41 +114,46 @@ Najistotniejszą informację zawiera zbiór danych *ratings_count*. Na jej podst
 
 ```{r, include=FALSE}
 p1 <- ggplot(plik, aes( x = ratings_count)) + geom_histogram(bins=100) + ggtitle("Histogram ilościowy ilości ocen - ratings_count") + 
-  labs(x= 'ilość ocen na książkę', y="liczebność obserwacji")
+  labs(x= 'ilość ocen na książkę', y="liczebność obserwacji") + theme(plot.title = element_text(hjust = 0.5))
 
 p2 <- ggplot(plik, aes(x = "", y = ratings_count)) + 
-  geom_boxplot() + ggtitle("Wykres pudełkowy ilości ocen - ratings_count") + labs(x="", y='ilość ocen - ratings_count')
+  geom_boxplot() + ggtitle("Wykres pudełkowy ilości ocen - ratings_count") + labs(x="", y='ilość ocen - ratings_count')  + theme(plot.title = element_text(hjust = 0.5))
 
 p <- grid.arrange(p1, p2, nrow=2) 
 ggsave("ratings_count.jpg", p)
 
 ```
 ```{=Latex}
+\begin{figure}[H]
+\begin{center}
 \includegraphics{ratings_count.jpg}
-```
+\caption{Wykresy - histogram oraz wykres pudełkowy ilości ocen}
+\label{w1}
+\end{center}
+\end{figure}
 
-Quick analiza, ze srednia ilosc glosow oddanych na ksiazke wynosi tyle `r mean(plik$ratings_count)` , mediana tyle `r median(plik$ratings_count)`, wiec rozklad taki (...-skosny), duzo odstajacych itd.
+Średnia ilość głosów oddanych na ksiażkę wynosi `r mean(plik$ratings_count)`, mediana - `r median(plik$ratings_count)`. Bazując na tych wynikach można stwiedzić, iż rozkład ilości ocen jest prawostronnie skośny. Otrzymana mediana jest mniejsza od średniej, a wykresy widoczne na rysunku \ref{w1} również sugerują wspomnianą skośność. Przy dopasowaniu empirycznej gęstości zauważalny byłby rozciagnięty ogon rozkładu w prawą stronę, natomiast duża ilość wartości odstających znajduję się nad 'pudełkiem' na ukazanym wykresie pudełkowym.
+
+\pagebreak
 
 Najpopularniejsze książki to:
-
+```
 ```{r, echo=FALSE}
 plik[order(-plik$ratings_count),][1:5,c(3,10)]
 ```
 
-Faktycznie są to bardzo znane ksiązki, z duzą iloscia ocen,
-są to te wartosci odstające, bo count jest way bigger niz srednia albo mediana,
-no i jest pare ksiazek z zerowymi głosami. (jak one trafiły do tego zestawienia top ksiazek to idk)
+Faktycznie, są to bardzo popularne ksiązki, które doczekały się równie popularnych ekranizacji. Ilosci ocen są bardzo duże, znacząco przewyższające wartością średnią oraz mediane, stąd są to zaobserwowane wartości odstające.
 
-## Czy czas miał wpływ na popularność? Książki z którego roku cieszą się największymz zainteresowaniem?
-wczytanie danych:
+## Czy okres w którym została wydana książka,ma wpływ na popularność? 
 
+Zastanowić się można, książki z którego roku cieszą się największymz zainteresowaniem.
 ```{r, include=FALSE}
 ##wczytanie danych - z pominieciem brakujących wartości
 
 year_vs_count <- na.omit(data.frame( year = plik$publication_year, count = plik$ratings_count))
 head(year_vs_count)
 
-p1 <- ggplot(year_vs_count, aes(x=year, y=count)) + geom_point() + ggtitle("Wykres rozproszenia ilości ocen na przestrzeni lat")
+p1 <- ggplot(year_vs_count, aes(x=year, y=count)) + geom_point() + ggtitle("Wykres rozproszenia ilości ocen na przestrzeni lat") + theme(plot.title = element_text(hjust = 0.5))
 ggsave("count_year.jpg", p1)
 
 ```
@@ -168,9 +174,9 @@ df$year <- as.numeric(as.character(df$year))
 
 wykresiki:
 ```{r, include=FALSE}
-p1 <- ggplot(df, aes(x=year, y=all_counts)) + geom_point() + ggtitle('Łączna ilość ocen w roku') + labs(x = "rok", y ="łączna ilość wydanych ocen")
+p1 <- ggplot(df, aes(x=year, y=all_counts)) + geom_point() + ggtitle('Łączna ilość ocen w roku') + labs(x = "rok", y ="łączna ilość wydanych ocen") + theme(plot.title = element_text(hjust = 0.5))
 
-p2 <- ggplot(df, aes(x=year, y=avg_count)) + geom_point() + ggtitle('Średnia ilość ocen w roku') + labs(x = "rok", y = "średnia ilość ocen na książkę")
+p2 <- ggplot(df, aes(x=year, y=avg_count)) + geom_point() + ggtitle('Średnia ilość ocen w roku') + labs(x = "rok", y = "średnia ilość ocen na książkę") + theme(plot.title = element_text(hjust = 0.5))
 
 p <- grid.arrange(p1, p2, ncol=2)
 ggsave("count_year_2.jpg", p)
@@ -184,7 +190,7 @@ ggsave("count_year_2.jpg", p)
 Jakas analiza - ilosc ksiazek na rok ma duze znaczenie oczywiscie
 
 ```{r, include=FALSE}
-p1 <- ggplot(df, aes(x=year, y=bpy)) + geom_point() + ggtitle('Ilość książek w roku') + labs(x = "rok", y ="ilość książek")
+p1 <- ggplot(df, aes(x=year, y=bpy)) + geom_point() + ggtitle('Ilość książek w roku') + labs(x = "rok", y ="ilość książek")  + theme(plot.title = element_text(hjust = 0.5))
 
 ggsave("bpy.jpg", p1)
 
@@ -219,7 +225,7 @@ cor(num_vs_count$num_pages, num_vs_count$ratings_count, method = "kendall")
 ```
 
 ```{r, include=FALSE} 
-p <- ggplot(num_vs_count, aes(x=num_pages, y=ratings_count)) + geom_point() + scale_x_continuous(limits=c(0,1000)) + ggtitle("Wykres rozproszenia ilości ocen od liczby stron") + labs(x="ilość stron", y="ilość ocen")
+p <- ggplot(num_vs_count, aes(x=num_pages, y=ratings_count)) + geom_point() + scale_x_continuous(limits=c(0,1000)) + ggtitle("Wykres rozproszenia ilości ocen od liczby stron") + labs(x="ilość stron", y="ilość ocen") + theme(plot.title = element_text(hjust = 0.5))
 
 ggsave("page_count.jpg" ,p)
 ```
@@ -247,10 +253,10 @@ count_per_pages <- na.omit(data.frame(less_than_pages = seq(ns, max(num_vs_count
 ```
 wykr
 ```{r, include=FALSE}
-p1 <- ggplot(count_per_pages, aes(x=less_than_pages, y=overall_count)) + geom_point() + scale_x_continuous(limits=c(0,2000)) + ggtitle("Łączna ilość ocen na zakres") + labs(x="zakres stron", y="łączna ilość ocen")
+p1 <- ggplot(count_per_pages, aes(x=less_than_pages, y=overall_count)) + geom_point() + scale_x_continuous(limits=c(0,2000)) + ggtitle("Łączna ilość ocen na zakres") + labs(x="zakres stron", y="łączna ilość ocen")  + theme(plot.title = element_text(hjust = 0.5))
 
 
-p2 <- ggplot(count_per_pages, aes(x=less_than_pages, y=avg_count)) + geom_point() + scale_x_continuous(limits=c(0,2000)) + ggtitle("Średnia ilość ocen na zakres") + labs(x="zakres stron", y="średnia ilość ocen")
+p2 <- ggplot(count_per_pages, aes(x=less_than_pages, y=avg_count)) + geom_point() + scale_x_continuous(limits=c(0,2000)) + ggtitle("Średnia ilość ocen na zakres") + labs(x="zakres stron", y="średnia ilość ocen") +  theme(plot.title = element_text(hjust = 0.5))
 
 
 p <- grid.arrange(p1, p2, ncol=2) 
@@ -263,7 +269,7 @@ ggsave("cpage_count.jpg", p)
 analiza wzgledem ilosci ksiazek:
 
 ```{r, include=FALSE}
-p1 <- ggplot(count_per_pages, aes(x=less_than_pages, y=num_books)) + geom_point() + scale_x_continuous(limits=c(0,2000)) + ggtitle("Ilość książek na zakres") + labs(x="zakres stron", y="ilość książek")
+p1 <- ggplot(count_per_pages, aes(x=less_than_pages, y=num_books)) + geom_point() + scale_x_continuous(limits=c(0,2000)) + ggtitle("Ilość książek na zakres") + labs(x="zakres stron", y="ilość książek") +  theme(plot.title = element_text(hjust = 0.5))
 
 ggsave("cpagenum_count.jpg", p1)
 ```
@@ -283,8 +289,8 @@ count_per_pages[count_per_pages$avg_count == max(count_per_pages$avg_count),]
 ## How are average rating and popularity related? AVG VS COUNT 
 ```{r, include = FALSE}
 avg_vs_count <- na.omit(data.frame(avg_rating = plik$average_rating, ratings_count = plik$ratings_count))
-p <- ggplot(avg_vs_count, aes(x=avg_rating, y=ratings_count)) + geom_point() + ggtitle("Wykres rozproszenia średniej oceny i ilości") + 
-  labs(x="średnia ocena", y = "ilość ocen")
+p <- ggplot(avg_vs_count, aes(x=avg_rating, y=ratings_count)) + geom_point() + ggtitle("Wykres rozproszenia średniej oceny i ilości") + labs(x="średnia ocena", y = "ilość ocen") +
+  theme(plot.title = element_text(hjust = 0.5))
 ggsave("avg_count.jpg", p)
 ```
 ```{=Latex}
@@ -317,9 +323,11 @@ avg_per_count <- na.omit(data.frame(less_than_rating = seq(ns, max(avg_vs_count$
 
 ```{r, include=FALSE}
 p1 <-  ggplot(avg_per_count, aes(x=less_than_rating, y=overall_count)) + geom_point() +ggtitle("Łączna ilość a zakres średniej oceny") + 
-  labs(x = "zakres średniej oceny", y="łączna ilość ocen")
+  labs(x = "zakres średniej oceny", y="łączna ilość ocen") +
+  theme(plot.title = element_text(hjust = 0.5))
 p2 <-  ggplot(avg_per_count, aes(x=less_than_rating, y=avg_count)) + geom_point()  + ggtitle("Średnia ilość a zakres średniej oceny") + 
-  labs(x = "zakres średniej oceny", y="średnia ilość ocen")
+  labs(x = "zakres średniej oceny", y="średnia ilość ocen") +
+  theme(plot.title = element_text(hjust = 0.5))
 
 p <- grid.arrange(p1, p2, nrow=2) 
 
@@ -327,7 +335,8 @@ ggsave("avg_count_1.jpg", p)
 
 p1 <-ggplot(avg_vs_count, aes(x=avg_rating, y=ratings_count)) +
 geom_boxplot(aes(group = cut_width(avg_rating, 0.1))) +coord_cartesian(xlim =c(2,5), ylim = c(0, 30000)) + ggtitle("Ilość ocen względem ich średniej") +
-  labs(x="zakres średnich ocen", y ="ilość wydanych ocen")
+  labs(x="zakres średnich ocen", y ="ilość wydanych ocen") +
+  theme(plot.title = element_text(hjust = 0.5))
 ggsave("avg_count_box.jpg", p1)
 
 ```
@@ -363,7 +372,7 @@ jakas analiza znowu i wnioski
 ```{r, include=FALSE}
 top20 <- df[order(-df$all_counts),][1:20,]
 p1 <- ggplot(top20, aes(x=publisher, y=all_counts)) + geom_bar(stat="identity") + ggtitle("Największa łączna ilość ocen") +
-theme(axis.text.x = element_text(angle = 90)) + labs(x="wydawnictwo", y="łączna ilość ocen") 
+theme(axis.text.x = element_text(angle = 90), plot.title = element_text(hjust = 0.5)) + labs(x="wydawnictwo", y="łączna ilość ocen") 
 
 top20_2 <-  df[order(-df$avg_count),][1:20,]
 p2 <- ggplot(top20_2, aes(x=publisher, y=avg_count)) + geom_bar(stat="identity")  + ggtitle("Największa średnia ilość ocen") + 
@@ -402,11 +411,11 @@ trzeba jakos opisac te tabelke zeby było wiadomo co to np bpa - books per autho
 ```{r, include=FALSE}
 top20 <- df[order(-df$all_counts),][1:20,]
 p1 <- ggplot(top20, aes(x=author, y=all_counts)) + geom_bar(stat="identity")  + ggtitle("Największa łączna ilość ocen") +
-theme(axis.text.x = element_text(angle = 90)) + labs(x="autor", y="łączna ilość ocen") 
+theme(axis.text.x = element_text(angle = 90),plot.title = element_text(hjust = 0.5)) + labs(x="autor", y="łączna ilość ocen") 
 
 top20_2 <-  df[order(-df$avg_count),][1:20,]
 p2 <- ggplot(top20_2, aes(x=author, y=avg_count)) + geom_bar(stat="identity") + ggtitle("Największa średnia ilość ocen") +
-theme(axis.text.x = element_text(angle = 90)) + labs(x="autor", y="średnia ilość ocen")
+theme(axis.text.x = element_text(angle = 90),plot.title = element_text(hjust = 0.5)) + labs(x="autor", y="średnia ilość ocen")
 
 p <- grid.arrange(p1, p2, ncol=2) 
 ggsave("bar2.jpg", p)

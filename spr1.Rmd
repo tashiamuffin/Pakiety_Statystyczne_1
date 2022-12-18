@@ -71,7 +71,7 @@ plik$publication_year[plik$publication_year == '17'] <- 2017
 
 
 
-Dane zostaną przedstawione i opisane w tabeli. Zbiór dotyczy 5281 najlepszych książek kryminalnych  (ang. crime and mystery).\footnote{Rankingu książek stworzony przez stronę goodreads [\url{https://www.goodreads.com/}]}
+Dane zostaną przedstawione i opisane w tabeli. Zbiór dotyczy 5281 najlepszych książek kryminalnych  (ang. crime and mystery).\footnote{Ranking stworzony przez stronę goodreads [\url{https://www.goodreads.com/}]}
 ```{=LATEX}
 \begin{itemize}
   \item W zbiorach, w których wystąpiły braki, w celu ich ominięcia została użyta wbudowana funkcja języka R \textbf{na.omit()}.
@@ -144,7 +144,7 @@ plik[order(-plik$ratings_count),][1:5,c(3,10)]
 
 Faktycznie, są to bardzo popularne ksiązki, które doczekały się równie popularnych ekranizacji. Ilosci ocen są bardzo duże, znacząco przewyższające wartością średnią oraz mediane, stąd są to zaobserwowane wartości odstające.
 
-## Czy okres w którym została wydana książka,ma wpływ na popularność? 
+## Czy okres w którym została wydana książka, ma wpływ na jej popularność? 
 
 Zastanowić się można, książki z którego roku cieszą się największymz zainteresowaniem.
 ```{r, include=FALSE}
@@ -159,11 +159,17 @@ ggsave("count_year.jpg", p1)
 ```
 
 ```{=Latex}
+\begin{figure}[H]
+\begin{center}
 \includegraphics{count_year.jpg}
+\caption{Wykres rozproszenia ilości ocen wydanych na książki w danym roku}
+\label{w2}
+\end{center}
+\end{figure}
+
+
+Aby przeanalizować poruszone zagadnienie, dane przedstawione na rysunku \ref{w2} zostały zsumowane względem konkretnego roku oraz następnie wyciągnięta została średnia ilość ocen.
 ```
-
-rok a ilosc ksiazek a laczna ilosc ocen  a srednia ilosc ocen na ksiazke
-
 ```{r, echo=FALSE}
 df <- as.data.frame(table(year_vs_count$year))
 colnames(df) <- c('year', 'bpy')
@@ -172,7 +178,6 @@ df$avg_count <- df$all_counts/df$bpy
 df$year <- as.numeric(as.character(df$year))
 ```
 
-wykresiki:
 ```{r, include=FALSE}
 p1 <- ggplot(df, aes(x=year, y=all_counts)) + geom_point() + ggtitle('Łączna ilość ocen w roku') + labs(x = "rok", y ="łączna ilość wydanych ocen") + theme(plot.title = element_text(hjust = 0.5))
 
@@ -183,24 +188,44 @@ ggsave("count_year_2.jpg", p)
 
 ```
 
-```{=Latex}
+```{=LATEX}
+\begin{figure}[H]
+\captionsetup{justification=centering,margin=2cm}
+\begin{center}
 \includegraphics{count_year_2.jpg}
+\caption{Wykresy - łączna ilość ocen wystawionych w danym roku oraz średnia uwzględniająca ilość wydanych w tym roku książek}
+\label{w3}
+\end{center}
+\end{figure}
+
+
+Zestawiając ze sobą wykresy przedatwione na rysunku \ref{w3}
 ```
-
-Jakas analiza - ilosc ksiazek na rok ma duze znaczenie oczywiscie
-
 ```{r, include=FALSE}
 p1 <- ggplot(df, aes(x=year, y=bpy)) + geom_point() + ggtitle('Ilość książek w roku') + labs(x = "rok", y ="ilość książek")  + theme(plot.title = element_text(hjust = 0.5))
 
 ggsave("bpy.jpg", p1)
 
 ```
-```{=Latex}
+```{=LATEX}
 \includegraphics{bpy.jpg}
 ```
 
 wracamy do naszego pytania - czy rok ma znaczenie
 brak widocznej zaleznosci liniowej, ale rangi spearmana nawet wysokie
+```{=LATEX}
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{|l|l|l|l|}
+\hline
+Pearson   & Kendall   & Spearman  & Noname    \\ \hline
+0.4564137 & 0.5983903 & 0.7614353 & 0.1691126 \\ \hline
+\end{tabular}
+\caption{Zestawienie korelacji aj ges}
+\label{tab2}
+\end{center}
+\end{table}
+```
 ```{r} 
 cor(df$all_counts, df$year, method = "pearson")
 cor(df$all_counts, df$year, method = "kendall")
